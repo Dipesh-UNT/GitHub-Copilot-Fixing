@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MyFlix</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .movie-card {
+            width: 18rem;
+            margin: 10px;
+        }
+        .movie-card:hover {
+            transform: scale(1.05);
+            transition: all .2s ease-in-out;
+        }
+        .movie-img {
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <header class="p-3 bg-dark text-white text-center">
+        <h1>MyFlix</h1>
+        <label for="search" class="sr-only">Search for a movie:</label>
+        <input type="text" id="search" class="form-control" placeholder="Search for a movie...">
+    </header>
+    <div id="movies" class="d-flex flex-wrap justify-content-center"></div>
+    <footer class="p-3 bg-dark text-white text-center">
+        <p>© 2022 MyFlix</p>
+    </footer>
+    <script>
+        const apiKey = '1a501fcb';
+        const moviesContainer = document.getElementById('movies');
+        const searchInput = document.getElementById('search');
+
+        function createMovieCard(movie) {
+            const movieCard = document.createElement('div');
+            movieCard.classList.add('card', 'movie-card', 'bg-dark', 'text-white');
+            movieCard.innerHTML = `
+                <img src="${movie.Poster}" class="card-img-top movie-img" alt="${movie.Title}">
+                <div class="card-body">
+                    <h5 class="card-title">${movie.Title}</h5>
+                    <p class="card-text">${movie.Year}</p>
+                </div>
+            `;
+            return movieCard;
+        }
+
+        function fetchMovies(searchTerm) {
+            fetch(`http://www.omdbapi.com/?s=${searchTerm}&apikey=${apiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    moviesContainer.innerHTML = '';
+                    data.Search.slice(0, 16).forEach(movie => {
+                        const movieCard = createMovieCard(movie);
+                        moviesContainer.appendChild(movieCard);
+                    });
+                });
+        }
+
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                fetchMovies(event.target.value);
+            }
+        });
+
+        // Fetch initial movies
+        fetchMovies('Harry Potter');
+    </script>
+</body>
+</html>
